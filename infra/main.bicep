@@ -559,7 +559,7 @@ module media_service 'core/video_indexer/media_service.bicep' = {
 }
 
 // AVAM Service
-module avam 'core/video_indexer/video_indexer.bicep' = {
+/*module avam 'core/video_indexer/video_indexer.bicep' = {
   name: 'avam'
   scope: rg
   params: {
@@ -568,7 +568,7 @@ module avam 'core/video_indexer/video_indexer.bicep' = {
     tags: tags
     mediaServiceAccountResourceId: media_service.outputs.id
   }
-}
+}*/
 
 // USER ROLES
 module openAiRoleUser 'core/security/role.bicep' = {
