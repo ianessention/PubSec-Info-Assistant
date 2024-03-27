@@ -154,8 +154,8 @@ class ChatReadRetrieveReadApproach(Approach):
         folder_filter = overrides.get("selected_folders", "")
         tags_filter = overrides.get("selected_tags", "")
 
-        logging.info('History: %s', history)
-        logging.info('Overrides: %s', overrides)
+        print('History: %s', history)
+        print('Overrides: %s', overrides)
         user_q = 'Generate search query for: ' + history[-1]["user"]
         
         query_prompt=self.query_prompt_template.format(query_term_language=self.query_term_language)
@@ -171,7 +171,7 @@ class ChatReadRetrieveReadApproach(Approach):
             self.chatgpt_token_limit - len(user_q)
             )
         
-        logging.info('messages: %s', messages)
+        print('messages: %s', messages)
 
         chat_completion = openai.ChatCompletion.create(
             deployment_id=self.chatgpt_deployment,
@@ -187,7 +187,7 @@ class ChatReadRetrieveReadApproach(Approach):
         if generated_query.strip() == "0":
             generated_query = history[-1]["user"]
 
-        logging.info('generated_query: %s', generated_query)
+        print('generated_query: %s', generated_query)
 
         # Generate embedding using REST API
         url = f'{self.embedding_service_url}/models/{self.escaped_target_model}/embed'
@@ -251,7 +251,7 @@ class ChatReadRetrieveReadApproach(Approach):
                 generated_query, top=top,vector_queries =[vector], filter=search_filter
             )
 
-        logging.info('r: %s', r)
+        print('r: %s', r)
 
         citation_lookup = {}  # dict of "FileX" moniker to the actual file name
         results = []  # list of results to be used in the prompt
@@ -271,8 +271,8 @@ class ChatReadRetrieveReadApproach(Approach):
 
         for idx, doc in enumerate(r):  # for each document in the search results
             # include the "FileX" moniker in the prompt, and the actual file name in the response
-            logging.info('index: %s', idx)
-            logging.info('doc: %s', doc)
+            print('index: %s', idx)
+            print('doc: %s', doc)
             results.append(
                 f"File{idx} " + "| " + nonewlines(doc[self.content_field])
             )
