@@ -147,6 +147,8 @@ class ChatReadRetrieveReadApproach(Approach):
         folder_filter = overrides.get("selected_folders", "")
         tags_filter = overrides.get("selected_tags", "")
 
+        print('History: %s', history)
+        print('Overrides: %s', overrides)
         user_q = 'Generate search query for: ' + history[-1]["user"]
         thought_chain["work_query"] = user_q
 
@@ -169,6 +171,8 @@ class ChatReadRetrieveReadApproach(Approach):
             self.QUERY_PROMPT_FEW_SHOTS,
             self.chatgpt_token_limit - len(user_question)
             )
+        
+        print('messages: %s', messages)
 
         chat_completion = await openai.ChatCompletion.acreate(
             deployment_id=self.chatgpt_deployment,
@@ -186,6 +190,7 @@ class ChatReadRetrieveReadApproach(Approach):
             generated_query = history[-1]["user"]
 
         thought_chain["work_search_term"] = generated_query
+  
         # Generate embedding using REST API
         url = f'{self.embedding_service_url}/models/{self.escaped_target_model}/embed'
         data = [f'"{generated_query}"']
@@ -243,6 +248,8 @@ class ChatReadRetrieveReadApproach(Approach):
                 generated_query, top=top,vector_queries=[vector], filter=search_filter
             )
 
+        print('r: %s', r)
+
         citation_lookup = {}  # dict of "FileX" moniker to the actual file name
         results = []  # list of results to be used in the prompt
         data_points = []  # list of data points to be used in the response
@@ -258,6 +265,8 @@ class ChatReadRetrieveReadApproach(Approach):
 
         for idx, doc in enumerate(r):  # for each document in the search results
             # include the "FileX" moniker in the prompt, and the actual file name in the response
+            print('index: %s', idx)
+            print('doc: %s', doc)
             results.append(
                 f"File{idx} " + "| " + nonewlines(doc[self.content_field])
             )
