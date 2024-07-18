@@ -33,6 +33,10 @@ Once you have the completed setting up a GitHub Codespaces, please move on to th
 
 Once you have completed the Sizing Estimator and sized your deployment appropriately, please move on to the Configuring your Environment step.
 
+## Upgrading or Migrating from 1.0
+
+If you have an existing 1.0 deployment and you are looking to upgrade that deployment in place, or migrate your existing processed data to a newly deployed instance, review the [Upgrade & Migrate documentation](/docs/deployment/move_or_migrate.md)
+
 ## Configure ENV files
 
 You now need to set up your local environment variables file in preparation for deployment.
@@ -54,7 +58,7 @@ ENABLE_WEB_CHAT | Yes | Defaults to `false`. This feature flag will enable the a
 ENABLE_BING_SAFE_SEARCH | No | Defaults to `true`. If you are using the `ENABLE_WEB_CHAT`feature you can set the following values to enable safe search on the Bing v7 Search APIs.
 ENABLE_UNGROUNDED_CHAT | Defaults to `false`. This feature flag will enable the ability to interact directly with an LLM. This experience will be similar to the Azure OpenAI Playground.
 ENABLE_MATH_ASSISTANT | Yes | Defaults to `true`. This feature flag will enable the Math Assistant tab in the Information Assistant website. Read more information on the [Math Assistant](/docs/features/features.md) 
-ENABLE_TABULAR_DATA_ASSISTANT | Yes | Defaults to `true`. This feature flag will enable the Tabular Data Assistant tab in the Information Assistant website. Read more information about the [Tabular Data Assistant](/docs/features/features.md)
+ENABLE_TABULAR_DATA_ASSISTANT | Yes | Defaults to `true`. This feature flag will enable the Tabular Data Assistant tab in the Information Assistant website. Read more information about the [Tabular Data Assistant](/docs/features/features.md). Read the security warnings on the Tabular Data Assistant feature page when deploying this feature.
 ENABLE_SHAREPOINT_CONNECTOR | Yes | Defaults to `false`. This feature flag enabled the ability to ingest data from SharePoint document stores into the Information Assistant. When enabled, be sure to set the `SHAREPOINT_TO_SYNC` parameter for your SharePoint sites. Read more about configuring the [SharePoint Connector](/docs/features/sharepoint.md). This feature flag is **NOT** compatible with `AZURE_ENVIRONMENT=AzureUSGovernment`.
 SHAREPOINT_TO_SYNC | No | This is a JSON Array of Objects for SharePoint Sites and their entry folders. The app will crawl down from the folder specified for each site. Specifying "/Shared Documents" will crawl all the documents in your SharePoint. `[{"url": "https://SharePoint.com/", "folder": "/Shared Documents"}]` This will **overwrite** any prior changes you've made to config.json. Information on setting up SharePoint Ingestion can be found here [SharePoint Connector](/docs/features/sharepoint.md)
 ENABLE_MULTIMEDIA | Yes | Defaults to `false`. This feature flag should not be changed at this time. The multimedia feature is still in development. Enabling this feature will deploy an Azure Video Indexer instance in your resource group only.
@@ -80,7 +84,10 @@ DEFAULT_LANGUAGE | Yes | Use the parameter to specify the matching ENV file loca
 ENABLE_CUSTOMER_USAGE_ATTRIBUTION <br>CUSTOMER_USAGE_ATTRIBUTION_ID | No | By default, **ENABLE_CUSTOMER_USAGE_ATTRIBUTION** is set to `true`. The CUA GUID which is pre-configured will tell Microsoft about the usage of this software. Please see [Data Collection Notice](/README.md#data-collection-notice) for more information. <br/><br/>You may provide your own CUA GUID by changing the value in **CUSTOMER_USAGE_ATTRIBUTION_ID**. Ensure you understand how to properly notify your customers by reading <https://learn.microsoft.com/en-us/partner-center/marketplace/azure-partner-customer-usage-attribution#notify-your-customers>.<br/><br/>To disable data collection, set **ENABLE_CUSTOMER_USAGE_ATTRIBUTION** to `false`.
 ENABLE_DEV_CODE | No | Defaults to `false`. It is not recommended to enable this flag, it is for development testing scenarios only.
 APPLICATION_TITLE | No | Defaults to "". Providing a value for this parameter will replace the Information Assistant's title in the black banner at the top of the UX.
+ENTRA_OWNERS | No | Defaults to "". Additional user id's you wish to assign as owners of created Azure Entra objects by way of assign to a security group.
+SERVICE_MANAGEMENT_REFERENCE | No | Defaults to "". Sets the service management reference value on Azure Entra objects created by Information Assistant if required by your organization.
 MAX_CSV_FILE_SIZE | Yes | Defaults to 20. This value limits the size of CSV files in MBs that will be supported for upload in the Tabular Data Assistant UX feature.
+PASSWORD_LIFETIME | No | Defaults to 365. The number of days that passwords associated with created identities are set to expire after creation. Change this setting if needed to conform to you policy requirements
 
 ## Log into Azure using the Azure CLI
 
@@ -150,7 +157,18 @@ deploy-search-indexes        Deploy search indexes
 extract-env-debug-webapp     Extract infrastructure.debug.env file from Terraform output
 extract-env-debug-functions  Extract local.settings.json to debug functions from Terraform output
 functional-tests             Run functional tests to check the processing pipeline is working
+merge-databases              Upgrade from bicep to terraform
+import-state                 import state of current services to TF state
+prep-upgrade                 Command to merge databases and import TF state in prep for an upgrade from 1.0 to 1.n
+prep-env                     Apply role assignments as needed to upgrade
+prep-migration-env           Prepare the environment for migration by assigning required roles
+run-data-migration           Run the data migration moving data from one resource group to another
+manual-inf-destroy           A command triggered by a user to destroy a resource group, associated resources, and related Entra items
 ```
+
+## Configure AD app registration ( manual steps )
+
+If you have insufficient permissions at the tenant level (Application Administrator Entra Role), follow the guide to complete the deployment [manual app registration](/docs/deployment/manual_app_registration.md).
 
 ## Configure authentication and authorization
 

@@ -19,7 +19,7 @@ import { ChatResponse,
     getMaxCSVFileSizeType,
     } from "./models";
 
-export async function chatApi(options: ChatRequest): Promise<ChatResponse> {
+export async function chatApi(options: ChatRequest, signal: AbortSignal): Promise<Response> {
     const response = await fetch("/chat", {
         method: "POST",
         headers: {
@@ -49,15 +49,15 @@ export async function chatApi(options: ChatRequest): Promise<ChatResponse> {
             },
             citation_lookup: options.citation_lookup,
             thought_chain: options.thought_chain
-        })
+        }),
+        signal: signal
     });
 
-    const parsedResponse: ChatResponse = await response.json();
     if (response.status > 299 || !response.ok) {
-        throw Error(parsedResponse.error || "Unknown error");
+        throw Error("Unknown error");
     }
    
-    return parsedResponse;
+    return response;
 }
 
 export function getCitationFilePath(citation: string): string {
@@ -245,21 +245,6 @@ export async function streamTdData(question: string, file: File): Promise<EventS
     return eventSource;
 }
 
-export async function getSolve(question: string): Promise<String[]> {
-    const response = await fetch(`/getSolve?question=${encodeURIComponent(question)}`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json"
-        }
-    });
-    
-    const parsedResponse: String[] = await response.json();
-    if (response.status > 299 || !response.ok) {
-        throw Error("Unknown error");
-    }
-
-    return parsedResponse;
-}
 export async function refresh(): Promise<String[]> {
     const response = await fetch(`/refresh?`, {
         method: "POST",
